@@ -24,22 +24,21 @@ func init() {
 }
 
 func GetByName(user domain.User) error {
-	query := "SELECT COUNT(*) FROM users WHERE username = $1"
+	query := "SELECT COUNT(*) FROM users WHERE firstname = $1"
 	var count int
-	err = repo.db.QueryRow(query, user.UserName).Scan(&count)
+	err = repo.db.QueryRow(query, user.FirstName).Scan(&count)
 	if err != nil {
 		return err
 	}
 	if count > 0 {
 		return errors.New("username already exists")
 	}
-	
 	return nil
 }
 
 func CreateUser(user domain.User) error {
-	query := "INSERT INTO users (username, password) VALUES ($1, $2)"
-	_, err = repo.db.Exec(query, user.UserName, user.Password)
+	query := "INSERT INTO users (firstname, password) VALUES ($1, $2)"
+	_, err = repo.db.Exec(query, user.FirstName, user.Password)
 	if err != nil {
 		return err
 	} else {
@@ -49,9 +48,9 @@ func CreateUser(user domain.User) error {
 }
 
 func Login(user domain.User) error {
-	query := "SELECT COUNT(*) FROM users WHERE username = $1 AND password = $2"
+	query := "SELECT COUNT(*) FROM users WHERE firstname = $1 AND password = $2"
 	var count int
-	err = repo.db.QueryRow(query, user.UserName, user.Password).Scan(&count)
+	err = repo.db.QueryRow(query, user.FirstName, user.Password).Scan(&count)
 	if err != nil {
 		return err
 	}
@@ -63,8 +62,8 @@ func Login(user domain.User) error {
 }
 
 func DeleteUser(user domain.User) error {
-	query := "DELETE FROM users WHERE username = $1"
-	_, err := repo.db.Exec(query, user.UserName)
+	query := "DELETE FROM users WHERE firstname = $1"
+	_, err := repo.db.Exec(query, user.FirstName)
 	if err != nil {
 		return err
 	}
