@@ -33,6 +33,7 @@ func GetByName(user domain.User) error {
 	if count > 0 {
 		return errors.New("username already exists")
 	}
+	
 	return nil
 }
 
