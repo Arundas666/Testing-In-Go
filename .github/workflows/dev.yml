@@ -40,8 +40,8 @@ jobs:
                     context: .
                     push: true
                     tags: |
-                      ywork/${{ env.IMAGE_NAME }}:${{ env.SHORT_SHA }}
-                      ywork/${{ env.IMAGE_NAME }}:latest
+                      test/${{ env.IMAGE_NAME }}:${{ env.SHORT_SHA }}
+                      test/${{ env.IMAGE_NAME }}:latest
           
                 - name: Deploy to AWS EC2
                   uses: appleboy/ssh-action@master
