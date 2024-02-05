@@ -26,10 +26,5 @@ func (w *registerUserUseCase) Execute(ctx context.Context, input entity.CreateUs
 	if err != nil {
 		return entity.User{}, err
 	}
-
-	// Do something
-	// ...
-	// ...
-
 	return user, nil
 }
