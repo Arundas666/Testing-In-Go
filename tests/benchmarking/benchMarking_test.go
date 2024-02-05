@@ -76,7 +76,7 @@ func TestFactorial(t *testing.T) {
 		{
 			name: "N is 1",
 			args: args{n: 3},
-			want: 1,
+			want: 6,
 		},
 		{
 			name: "N is 3",
