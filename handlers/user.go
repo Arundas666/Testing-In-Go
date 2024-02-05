@@ -1,40 +1,45 @@
 package handlers
 
 import (
+	"fmt"
 	"net/http"
 	"test/domain"
+	"test/entity"
 	"test/repository"
+	"test/usecase"
 
 	"github.com/gin-gonic/gin"
 )
 
-func Hi(c *gin.Context) {
-	c.JSON(http.StatusOK, gin.H{"Hi": "Yes it seems good"})
+type userDelivery struct {
+	registerUserUseCase usecase.RegisterUserUseCase
 }
 
-func Signup(c *gin.Context) {
-	var input domain.User
-	if err := c.ShouldBindJSON(&input); err != nil {
+func NewUserHandler(regUsecase usecase.RegisterUserUseCase) *userDelivery {
+	return &userDelivery{
+		registerUserUseCase: regUsecase,
+	}
+}
+func (u *userDelivery) Register(c *gin.Context) {
+	var createUserInput entity.CreateUserInput
+
+	if err := c.BindJSON(&createUserInput); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	err := repository.GetByName(input)
+	newUser, err := u.registerUserUseCase.Execute(c.Request.Context(), createUserInput)
+	fmt.Println("Inside Register function")
+
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	err = repository.CreateUser(input)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "creating user failed"})
-		return
-	} else {
-		c.JSON(http.StatusOK, gin.H{"success": "user created succesfuly"})
-	}
+	c.JSON(http.StatusCreated, newUser)
 }
 
-func Login(c *gin.Context) {
+func (uh *userDelivery) Login(c *gin.Context) {
 	var input domain.User
 	if err := c.ShouldBindJSON(&input); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
