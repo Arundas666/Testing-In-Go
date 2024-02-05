@@ -43,26 +43,30 @@ jobs:
                       ywork/${{ env.IMAGE_NAME }}:${{ env.SHORT_SHA }}
                       ywork/${{ env.IMAGE_NAME }}:latest
           
-                - name: Deploy to Digital Ocean droplet via SSH action
-                  uses: appleboy/ssh-action@master
-                  with:
-                    host: ${{ secrets.HOST_IP }}
-                    username: ${{ secrets.HOST_USERNAME }}
-                    key: ${{ secrets.HOST_SSH }}
-                    script: |
-                      docker login -u ${{ secrets.DOCKERHUB_USERNAME }} -p ${{ secrets.DOCKERHUB_PASSWORD }}
-          
-                      if [ "$(docker ps -q -f name=${{ env.REPO }})" ]; then
-                        docker stop ${{ env.REPO }}
-                        docker rm ${{ env.REPO }}
-                      fi
+                      - name: Deploy to AWS EC2
+                      uses: appleboy/ssh-action@master
+                      with:
+                        host: ${{ secrets.AWS_HOST }}
+                        username: ${{ secrets.AWS_USERNAME }}
+                        key: ${{ secrets.AWS_SSH_KEY }}
+                        port: ${{ secrets.AWS_SSH_PORT }}
+                        script: |
+                          docker login -u ${{ secrets.DOCKERHUB_USERNAME }} -p ${{ secrets.DOCKERHUB_PASSWORD }}
+                          
+                          # Stop and remove existing container
+                          if [ "$(docker ps -q -f name=${{ env.REPO }})" ]; then
+                            docker stop ${{ env.REPO }}
+                            docker rm ${{ env.REPO }}
+                          fi
                 
-                      if [ "$(docker images -q ${{env.REPO}}/${{ env.IMAGE_NAME }})" ]; then
-                        docker rmi -f ${{env.REPO}}/${{ env.IMAGE_NAME }}
-                      fi
-                      
-                      docker run -p 8000:8000 -d \
-                        --restart always \
-                        --env-file=.env \
-                        --name ${{env.REPO}} \
-                        ${{env.REPO}}/${{ env.IMAGE_NAME }}
+                          # Remove existing image
+                          if [ "$(docker images -q ${{env.REPO}}/${{ env.IMAGE_NAME }})" ]; then
+                            docker rmi -f ${{env.REPO}}/${{ env.IMAGE_NAME }}
+                          fi
+                          
+                          # Run the new container
+                          docker run -p 8000:8000 -d \
+                            --restart always \
+                            --env-file=.env \
+                            --name ${{env.REPO}} \
+                            ${{env.REPO}}/${{ env.IMAGE_NAME }}
