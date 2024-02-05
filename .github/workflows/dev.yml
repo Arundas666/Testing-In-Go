@@ -43,9 +43,9 @@ jobs:
                       ywork/${{ env.IMAGE_NAME }}:${{ env.SHORT_SHA }}
                       ywork/${{ env.IMAGE_NAME }}:latest
           
-                      - name: Deploy to AWS EC2
-                      uses: appleboy/ssh-action@master
-                      with:
+                - name: Deploy to AWS EC2
+                  uses: appleboy/ssh-action@master
+                  with:
                         host: ${{ secrets.AWS_HOST }}
                         username: ${{ secrets.AWS_USERNAME }}
                         key: ${{ secrets.AWS_SSH_KEY }}
