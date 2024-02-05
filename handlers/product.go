@@ -1,5 +1,5 @@
 package handlers
-
+ 
 // func AddProduct(c *gin.Context) {
 // 	var input domain.Product
 // 	if err := c.ShouldBindJSON(&input); err != nil {
