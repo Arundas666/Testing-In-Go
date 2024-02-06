@@ -14,6 +14,10 @@ on:
 env:
           IMAGE_NAME: test
           REPO: arundas285
+         
+
+permissions:
+            contents: read
 
 jobs:
             build-and-deploy:
@@ -46,30 +50,17 @@ jobs:
                       arundas285/${{ env.IMAGE_NAME }}:${{ env.SHORT_SHA }}
                       arundas285/${{ env.IMAGE_NAME }}:latest
                   continue-on-error: false  # Stop the workflow if this step fails
-                - name: Deploy to AWS EC2
+                - name: Build and push Docker image
                   uses: appleboy/ssh-action@master
                   with:
-                        host: ${{ secrets.AWS_HOST }}
-                        username: ${{ secrets.AWS_USERNAME }}
-                        key: ${{ secrets.AWS_SSH_KEY }}
-                        port: ${{ secrets.AWS_SSH_PORT }}
-                        script: |
-                          docker login -u ${{ secrets.DOCKERHUB_USERNAME }} -p ${{ secrets.DOCKERHUB_PASSWORD }}
-                          
-                          # Stop and remove existing container
-                          if [ "$(docker ps -q -f name=${{ env.REPO }})" ]; then
-                            docker stop ${{ env.REPO }}
-                            docker rm ${{ env.REPO }}
-                          fi
+                    host: ${{secrets.EC2_HOST}}
+                    username: ${{secrets.EC2_USERNAME}}
+                    key: ${{secrets.HOST_SSH}}
+
+                    script: |
+                        docker stop test || true
+                        docker rm test || true
+                        docker pull ${{secrets.DOCKERHUB_USERNAME}}/test.${{ github.sha }}
+                        docker run -d --name test -p 80:80 ${{secrets.DOCKERHUB_USERNAME}}/test.${{ github.sha }}
+
                 
-                          # Remove existing image
-                          if [ "$(docker images -q ${{env.REPO}}/${{ env.IMAGE_NAME }})" ]; then
-                            docker rmi -f ${{env.REPO}}/${{ env.IMAGE_NAME }}
-                          fi
-                          
-                          # Run the new container
-                          docker run -p 8000:8000 -d \
-                            --restart always \
-                            --env-file=.env \
-                            --name ${{env.REPO}} \
-                            ${{env.REPO}}/${{ env.IMAGE_NAME }}
