@@ -34,8 +34,8 @@ func Test_registerUserUseCase_Execute(t *testing.T) {
 			args: args{
 				ctx: context.TODO(),
 				input: entity.CreateUserInput{
-					Email:     "john.doe@example.com",
-					FirstName: "John",
+					Email:     "arun.doe@example.com",
+					FirstName: "Arun",
 					LastName:  "Doe",
 					Gender:    "MALE",
 				},
@@ -45,8 +45,8 @@ func Test_registerUserUseCase_Execute(t *testing.T) {
 					Create(
 						context.TODO(),
 						entity.CreateUserInput{
-							Email:     "john.doe@example.com",
-							FirstName: "John",
+							Email:     "arun.doe@example.com",
+							FirstName: "Arun",
 							LastName:  "Doe",
 							Gender:    "MALE",
 						},
@@ -54,8 +54,8 @@ func Test_registerUserUseCase_Execute(t *testing.T) {
 					Return(
 						entity.User{
 							ID:        1,
-							Email:     "john.doe@example.com",
-							FirstName: "John",
+							Email:     "arun.doe@example.com",
+							FirstName: "arun",
 							LastName:  "Doe",
 							Gender:    "MALE",
 						},
@@ -64,8 +64,8 @@ func Test_registerUserUseCase_Execute(t *testing.T) {
 			},
 			want: entity.User{
 				ID:        1,
-				Email:     "john.doe@example.com",
-				FirstName: "John",
+				Email:     "arun.doe@example.com",
+				FirstName: "arun",
 				LastName:  "Doe",
 				Gender:    "MALE",
 			},
