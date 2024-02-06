@@ -57,7 +57,7 @@ jobs:
                     username: ${{secrets.EC2_USERNAME}}
                     key: ${{secrets.HOST_SSH}}
                     script: |
-                     docker login -u ${{ secrets.DOCKERHUB_USERNAME }} -p ${{ secrets.DOCKERHUB_PASSWORD }}
+                     echo "${{ secrets.DOCKERHUB_PASSWORD }}" | docker login -u ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
 
                      if [ "$(docker ps -q -f name=${{ env.REPO }})" ]; then
                      docker stop ${{ env.REPO }}
@@ -70,6 +70,5 @@ jobs:
 
                      docker run -p 8000:8000 -d \
                      --restart always \
-                     --env-file=.env \
                      --name ${{env.REPO}} \
                      ${{env.REPO}}/${{ env.IMAGE_NAME }}
